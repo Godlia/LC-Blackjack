@@ -40,7 +40,7 @@ namespace BlackJack.Patches
 
 
 
-        public void Evaluate()
+        public string Evaluate()
         {
             int playersum = 0;
             int dealersum = 0;
@@ -65,8 +65,8 @@ namespace BlackJack.Patches
             for (int i = 0; i < dealerHand.Count; i++)
             {
                 if (dealerHand[i] != null)
-                {
-                    if (dealerHand[i].actualValue == 11)
+                { 
+                    if (dealerHand[i].actualValue == 11 && i == 0)
                     {
                         if (dealerHand[i].actualValue + dealerHand[i + 1].actualValue > 21)
                         {
@@ -100,13 +100,14 @@ namespace BlackJack.Patches
                 BlackJackBase._instance.mls.LogInfo("You busted");
                 GameToString("You busted, better luck next time.");
                 playerLost = true;
-                return;
+                return loseCondition();
             }
             BlackJackBase._instance.mls.LogInfo("6");
             if (dealersum > 21)
             {
                 BlackJackBase._instance.mls.LogInfo("Dealer busted");
                 Payout();
+                return WinCondition();
             }
             BlackJackBase._instance.mls.LogInfo("7");
 
@@ -119,7 +120,7 @@ namespace BlackJack.Patches
                     BlackJackBase._instance.mls.LogInfo("You got blackjack");
                     GameToString("You got Blackjack, well played!");
                     Payout();
-                    return;
+                    return WinCondition();
                 }
             }
             BlackJackBase._instance.mls.LogInfo("9");
@@ -130,28 +131,48 @@ namespace BlackJack.Patches
                     BlackJackBase._instance.mls.LogInfo("Dealer got blackjack");
                     GameToString("Dealer got Blackjack, terribly sorry.");
                     playerLost = true;
-                    return;
+                    return loseCondition();
                 }
             }
-
+            return GameToString();
         }
 
         public string Hit()
         {
+            if (!playerLost)
+            {
                 Card newCard = new Card();
                 playerHand.Add(newCard);
-                Evaluate();
-                return GameToString();
+                return Evaluate();
+            } else
+            {
+                return "You already lost, start a new game by typing blackjack";
+            }
         }
 
         public void Stand()
         {
-
+            if(!playerLost)
+            {
+                playerStand = true;
+                Evaluate();
+            } else
+            {
+                BlackJackBase._instance.mls.LogInfo("You already lost, start a new game by typing blackjack");
+            }
         }
 
         public void DoubleDown()
         {
-
+            if(!playerLost)
+            {
+                Card newCard = new Card();
+                playerHand.Add(newCard);
+                Stand();
+            } else
+            {
+                BlackJackBase._instance.mls.LogInfo("You already lost, start a new game by typing blackjack");
+            }
         }
 
         public void Payout()
@@ -200,6 +221,14 @@ namespace BlackJack.Patches
             return returnString;
         }
 
+        public string WinCondition()
+        {
+            return "You won!";
+        }
+        public string loseCondition()
+        {
+            return "You lost!";
+        }
 
         public static void StopGame()
         {
