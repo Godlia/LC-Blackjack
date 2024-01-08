@@ -30,7 +30,7 @@ namespace BlackJack
 
         internal ManualLogSource mls;
 
-        BlackJackGameManager currentGame;
+        public BlackJackGameManager currentGame;
 
         void Awake()
         {
@@ -46,19 +46,36 @@ namespace BlackJack
             harmony.PatchAll(typeof(BlackJackBase));
 
 
-            TerminalNode BlackjackTable = CreateTerminalNode("blackjack");
+            TerminalNode BlackjackNode = CreateTerminalNode("BlackJackNode");
 
-            AddCommand("Blackjack", new CommandInfo()
+
+
+            
+            AddCommand("blackjack", new CommandInfo()
             {
                 DisplayTextSupplier = () => 
                 {
                     Logger.LogWarning("Starting a game of Blackjack");
                     currentGame = new BlackJackGameManager();
-                    currentGame.StartGame();
-                    return "Starting a game of Blackjack\n\n";
+                    currentGame.StartGame(currentGame);
+                    return currentGame.GameToString();
                 },
-                Category = "Blackjack"
+                Category = "blackjack"
             });
+
+
+            AddCommand("hit", new CommandInfo()
+            {
+                DisplayTextSupplier = () =>
+                {
+                    Logger.LogWarning("Hit");
+                    return currentGame.Hit();
+                },
+                Category = "blackjack"
+            });
+
+
+
 
 
 
@@ -66,7 +83,7 @@ namespace BlackJack
 
         private void OnTerminalExit(object sender, TerminalEventArgs e)
         {
-            //currentGame.Stop(currentGame);
+            BlackJackBase._instance.currentGame = null;
         }
 
 

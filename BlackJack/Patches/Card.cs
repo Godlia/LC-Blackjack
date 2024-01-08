@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlackJack.Patches
 {
-    internal class Card
+    public class Card
     {
         public int actualValue;
         public string suit;
@@ -23,7 +23,7 @@ namespace BlackJack.Patches
 
         public override string ToString()
         {
-            return this.name + " of " + this.suit;
+            return "[" + this.actualValue + "] - " + this.name + " of " + this.suit;
         }
 
         public static int randomInt(int min, int max)
