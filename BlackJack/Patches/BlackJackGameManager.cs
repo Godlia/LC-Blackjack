@@ -21,9 +21,8 @@ namespace BlackJack.Patches
             BlackJackBase._instance.mls.LogInfo("Starting Game from patch");
         }
 
-        public void StartGame(BlackJackGameManager game)
+        public void StartGame()
         {
-            gamePassthrough = game;
             BlackJackBase._instance.mls.LogInfo("Object.Startgame HAS BEEN RUN");
             for (int i = 0; i < 2; i++)
             {
@@ -229,6 +228,8 @@ namespace BlackJack.Patches
                 "PLost: " + playerLost + "\nDLost: " + dealerLost + "\nPBJ: " + playerblackjack + "\nDBJ: " + dealerBlackjack +"" +
                 "\nPstand: " + playerStand);
 
+
+            //if standing
             if(playerStand)
             {
                 if(dealerSum < 17 && dealerSum > playerSum)
@@ -236,7 +237,7 @@ namespace BlackJack.Patches
                     playerLost = true;
                 } else {
                     dealerHand.Add(new Card());
-
+                    Evaluate();
                 }
 
             }
@@ -264,14 +265,14 @@ namespace BlackJack.Patches
         }
         public string Hit()
         {
-            if (!playerLost)
+            if (!playerLost && !playerStand)
             {
                 Card newCard = new Card();
                 playerHand.Add(newCard);
                 return Evaluate();
             } else
             {
-                return "You already lost, start a new game by typing blackjack";
+                return "You already lost or stood - continue standing or start a new game by typing blackjack";
             }
         }
 
@@ -378,13 +379,19 @@ namespace BlackJack.Patches
         {
             playerLost = true;
             BlackJackBase._instance.mls.LogInfo("Lose Condition");
-            return GameToString("You won!");
+            return GameToString("You lost!");
         }
 
-        public static void StopGame()
+        public void StopGame()
         {
             BlackJackBase._instance.mls.LogInfo("Stopping Game");
             BlackJackBase._instance.currentGame = null;
+        }
+
+        public string Debug()
+        {
+            return ("Player Hand: " + playerHand[0].ToString() + " " + playerHand[1].ToString()  + "\n" + "Dealer Hand: " + dealerHand[0].ToString() + " " + dealerHand[1].ToString());
+
         }
     }
 }

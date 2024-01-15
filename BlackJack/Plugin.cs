@@ -25,7 +25,7 @@ namespace BlackJack
     [BepInDependency("atomic.terminalapi")]
     public class BlackJackBase : BaseUnityPlugin
     {
-        public const string modGUID = "godzilla.blackjack";
+        public const string modGUID = "Godzilla.Blackjack";
         public const string modName = "BlackJack";
         public const string modVersion = "1.0.0";
         
@@ -61,9 +61,16 @@ namespace BlackJack
                 DisplayTextSupplier = () => 
                 {
                     Logger.LogWarning("Starting a game of Blackjack");
-                    currentGame = new BlackJackGameManager();
-                    currentGame.StartGame(currentGame);
-                    return currentGame.GameToString();
+                    if(currentGame == null)
+                    {
+
+                        currentGame = new BlackJackGameManager();
+                        currentGame.StartGame();
+                        return currentGame.GameToString();
+                    } else
+                    {
+                        return currentGame.GameToString();
+                    }
                 },
                 Category = "blackjack"
             });
@@ -96,6 +103,15 @@ namespace BlackJack
                 Category = "blackjack"
             });
 
+            AddCommand("bjtest", new CommandInfo()
+            {
+                DisplayTextSupplier = () =>
+                {
+                    return currentGame.Debug();
+                },
+                Category = "blackjack"
+            });
+
 
 
 
@@ -105,7 +121,8 @@ namespace BlackJack
 
         private void OnTerminalExit(object sender, TerminalEventArgs e)
         {
-            BlackJackBase._instance.currentGame = null;
+            BlackJackBase._instance.currentGame.StopGame();
+            BlackJackBase._instance.mls.LogInfo("Trying to kill blackjack game" + currentGame);
         }
 
 
