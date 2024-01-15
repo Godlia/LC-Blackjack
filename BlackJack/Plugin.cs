@@ -14,6 +14,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
+cp D:\A-Programming\LethalCompany\BlackJack\BlackJack\bin\Debug\BlackJack.dll "E:\SteamLibrary\steamapps\common\Lethal Company\BepInEx\plugins"; Start-Process -FilePath "E:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company.exe"
+*/
+
+
 namespace BlackJack
 {
     [BepInPlugin(modGUID,modName,modVersion)]
@@ -69,7 +74,24 @@ namespace BlackJack
                 DisplayTextSupplier = () =>
                 {
                     Logger.LogWarning("Hit");
+                    if (currentGame != null) {
                     return currentGame.Hit();
+                }
+                    return "You haven't started a game! Type blackjack to start one!\n";
+            },
+                Category = "blackjack"
+            });
+
+            AddCommand("stand", new CommandInfo()
+            {
+                DisplayTextSupplier = () =>
+                {
+                    Logger.LogWarning("Stand"); 
+                    if (currentGame != null)
+                    {
+                        return currentGame.Stand();
+                    }
+                    return "You haven't started a game! Type blackjack to start one!\n";
                 },
                 Category = "blackjack"
             });
